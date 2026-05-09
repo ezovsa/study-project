@@ -7,7 +7,7 @@ services:
     environment:
       - NODE_ENV=production
       - DB_PATH=/app/data/database.sqlite
-      - CORS_ORIGIN=https://yourdomain.com
+      - CORS_ORIGIN=https://sergewdr.beget.tech
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
       interval: 10s
