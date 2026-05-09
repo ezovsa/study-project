@@ -1,0 +1,21 @@
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { UserRole } from '../../entities/user.entity';
+
+export const Roles = (...roles: UserRole[]) => {
+  const { SetMetadata } = require('@nestjs/common');
+  return SetMetadata('roles', roles);
+};
+
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    const roles = this.reflector.get<UserRole[]>('roles', context.getHandler());
+    if (!roles) return true;
+    const { user } = context.switchToHttp().getRequest();
+    if (!roles.includes(user.role)) throw new ForbiddenException('Недостаточно прав');
+    return true;
+  }
+}
