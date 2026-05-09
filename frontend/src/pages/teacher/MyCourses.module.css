@@ -1,0 +1,113 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.pageTitle { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 6px; }
+.pageSubtitle { color: var(--text-secondary); font-size: 14px; }
+
+.createBtn {
+  padding: 11px 22px;
+  background: linear-gradient(135deg, #6c63ff, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: var(--shadow-glow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+
+.statChip {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.statValue { font-size: 22px; font-weight: 800; color: var(--chip-color); }
+.statLabel { font-size: 13px; color: var(--text-secondary); }
+
+.emptyCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 60px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.emptyTitle { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.emptyDesc { color: var(--text-secondary); margin-bottom: 24px; }
+
+.createFirstBtn {
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #6c63ff, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: var(--shadow-glow);
+}
+
+.list { display: flex; flex-direction: column; gap: 12px; }
+
+.courseRow {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: border-color 0.2s;
+}
+
+.courseRow:hover { border-color: var(--border-light); }
+
+.statusBar {
+  width: 4px;
+  height: 60px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.statusPublished { background: var(--success); }
+.statusDraft { background: var(--warning); }
+
+.courseInfo { flex: 1; min-width: 0; }
+.courseTitleRow { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.courseTitle { font-size: 16px; font-weight: 700; color: var(--text); margin: 0; }
+
+.badgePublished { font-size: 11px; padding: 2px 8px; border-radius: var(--radius-full); font-weight: 600; background: var(--success-light); color: var(--success); }
+.badgeDraft { font-size: 11px; padding: 2px 8px; border-radius: var(--radius-full); font-weight: 600; background: var(--warning-light); color: var(--warning); }
+
+.diffBadge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  color: var(--diff-color);
+  background: color-mix(in srgb, var(--diff-color) 20%, transparent);
+}
+
+.courseMeta { display: flex; gap: 20px; font-size: 13px; color: var(--text-muted); }
+
+.actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+
+.actionEdit { padding: 8px 16px; background: var(--primary-light); color: var(--primary); border-radius: var(--radius-md); font-size: 13px; font-weight: 700; border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent); }
+.actionAnalytics { padding: 8px 16px; background: var(--success-light); color: var(--success); border-radius: var(--radius-md); font-size: 13px; font-weight: 700; border: 1px solid color-mix(in srgb, var(--success) 30%, transparent); }
+.actionPublish { padding: 8px 16px; background: var(--info-light); color: var(--info); border: 1px solid color-mix(in srgb, var(--info) 30%, transparent); border-radius: var(--radius-md); cursor: pointer; font-size: 13px; font-weight: 700; }
+.actionUnpublish { padding: 8px 16px; background: var(--warning-light); color: var(--warning); border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent); border-radius: var(--radius-md); cursor: pointer; font-size: 13px; font-weight: 700; }
+.actionDelete { padding: 8px 12px; background: var(--danger-light); color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); border-radius: var(--radius-md); cursor: pointer; font-size: 13px; font-weight: 700; }

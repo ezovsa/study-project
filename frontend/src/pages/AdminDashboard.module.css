@@ -1,0 +1,74 @@
+.header { margin-bottom: 28px; }
+.pageTitle { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 6px; }
+.pageSubtitle { color: var(--text-secondary); font-size: 14px; }
+
+.statsRow { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 28px; }
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.chartCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border);
+}
+
+.chartTitle { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+
+.tableCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border);
+}
+
+.tableTitle { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+.table { width: 100%; border-collapse: collapse; }
+
+.th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+.tr:hover { background: var(--bg-secondary); }
+.td { padding: 12px 14px; }
+
+.rankBadge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.rankTop { background: linear-gradient(135deg, var(--warning), var(--danger)); color: #fff; }
+.rankOther { background: var(--bg-secondary); color: var(--text-muted); }
+
+.courseTitle { font-weight: 600; color: var(--text); font-size: 14px; }
+.teacherName { color: var(--text-secondary); font-size: 13px; }
+
+.categoryBadge {
+  font-size: 12px;
+  color: var(--info);
+  background: var(--info-light);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.enrollCount { font-weight: 800; color: var(--success); font-size: 16px; }

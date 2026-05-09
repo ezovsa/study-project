@@ -1,205 +1,222 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { theme as t } from '../styles/theme';
+import { Submission } from '../types';
+import styles from './TeacherSubmissions.module.css';
 
 type Tab = 'pending' | 'all';
 
+type GradeEntry = { score: string; feedback: string };
+
+function scoreClass(pct: number): string {
+  if (pct >= 80) return styles.scoreHigh;
+  if (pct >= 60) return styles.scoreMed;
+  return styles.scoreLow;
+}
+
+function scorePercent(score: string, maxScore?: number): number {
+  const n = Number(score);
+  if (!n || !maxScore) return 0;
+  return Math.round((n / maxScore) * 100);
+}
+
 export default function TeacherSubmissions() {
   const [tab, setTab] = useState<Tab>('pending');
-  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [grades, setGrades] = useState<Record<number, { score: string; feedback: string }>>({});
+  const [grades, setGrades] = useState<Record<number, GradeEntry>>({});
   const [saving, setSaving] = useState<Record<number, boolean>>({});
-  const [saved, setSaved] = useState<Record<number, boolean>>({});
   const [expanded, setExpanded] = useState<number | null>(null);
 
   const load = async () => {
     setLoading(true);
     const url = tab === 'pending' ? '/teacher/submissions/pending' : '/teacher/submissions/all';
-    const { data } = await api.get(url);
+    const { data } = await api.get<Submission[]>(url);
     setSubmissions(data);
     setLoading(false);
   };
 
   useEffect(() => { load(); }, [tab]);
 
-  const handleGrade = async (sub: any) => {
+  const handleGrade = async (sub: Submission) => {
     const g = grades[sub.id];
     if (!g?.score) return;
-    setSaving({ ...saving, [sub.id]: true });
+    setSaving(prev => ({ ...prev, [sub.id]: true }));
     await api.patch(`/submissions/${sub.id}/grade`, { score: Number(g.score), feedback: g.feedback || '' });
-    setSaved({ ...saved, [sub.id]: true });
-    setSaving({ ...saving, [sub.id]: false });
+    setSaving(prev => ({ ...prev, [sub.id]: false }));
     if (tab === 'pending') setSubmissions(prev => prev.filter(s => s.id !== sub.id));
   };
 
-  const setGrade = (id: number, field: 'score' | 'feedback', value: string) => {
+  const setGrade = (id: number, field: keyof GradeEntry, value: string) => {
     setGrades(prev => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
   };
 
-  const scorePercent = (score: string, max: number) => {
-    const n = Number(score);
-    if (!n || !max) return 0;
-    return Math.round(n / max * 100);
-  };
-
-  const scoreColor = (pct: number) => pct >= 80 ? t.colors.success : pct >= 60 ? t.colors.warning : t.colors.danger;
-
   return (
     <div className="fade-in">
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: t.colors.text, letterSpacing: '-0.5px', marginBottom: 6 }}>Проверка заданий</h1>
-        <p style={{ color: t.colors.textSecondary, fontSize: 14 }}>Оценивайте ответы студентов и давайте обратную связь</p>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Проверка заданий</h1>
+        <p className={styles.pageSubtitle}>Оценивайте ответы студентов и давайте обратную связь</p>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, background: t.colors.bgSecondary, borderRadius: t.radius.md, padding: 4, width: 'fit-content', marginBottom: 24, border: `1px solid ${t.colors.border}` }}>
-        {([['pending', '⏳ Ожидают проверки'], ['all', '📋 Все ответы']] as [Tab, string][]).map(([key, label]) => (
-          <button key={key} onClick={() => setTab(key)}
-            style={{ padding: '8px 20px', borderRadius: t.radius.sm, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, transition: 'all 0.2s', background: tab === key ? 'linear-gradient(135deg, #6c63ff, #a855f7)' : 'transparent', color: tab === key ? '#fff' : t.colors.textSecondary, boxShadow: tab === key ? t.shadow.glow : 'none' }}>
-            {label}
+      <div className={styles.tabs}>
+        {(['pending', 'all'] as Tab[]).map(key => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`${styles.tab} ${tab === key ? styles.tabActive : ''}`}
+          >
+            {key === 'pending' ? '⏳ Ожидают проверки' : '📋 Все ответы'}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className={styles.skeletons}>
           {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 80 }} />)}
         </div>
       ) : submissions.length === 0 ? (
-        <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 60, textAlign: 'center', border: `1px solid ${t.colors.border}` }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: t.colors.text, marginBottom: 8 }}>
+        <div className={styles.empty}>
+          <div className={styles.emptyIcon}>🎉</div>
+          <div className={styles.emptyTitle}>
             {tab === 'pending' ? 'Все задания проверены!' : 'Ответов пока нет'}
           </div>
-          <div style={{ color: t.colors.textSecondary, fontSize: 14 }}>
+          <div className={styles.emptyText}>
             {tab === 'pending' ? 'Отличная работа — нет непроверенных заданий' : 'Студенты ещё не сдавали задания'}
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className={styles.list}>
           {submissions.map(sub => {
             const isExpanded = expanded === sub.id;
-            const g = grades[sub.id] || { score: sub.score?.toString() || '', feedback: sub.feedback || '' };
+            const g: GradeEntry = grades[sub.id] ?? { score: sub.score?.toString() ?? '', feedback: sub.feedback ?? '' };
             const pct = scorePercent(g.score, sub.assignment?.maxScore);
+            const pctClass = scoreClass(pct);
 
             return (
-              <div key={sub.id} style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, border: `1px solid ${isExpanded ? t.colors.primary : t.colors.border}`, overflow: 'hidden', transition: 'border-color 0.2s', boxShadow: isExpanded ? t.shadow.glow : 'none' }}>
-                {/* Header */}
-                <div onClick={() => setExpanded(isExpanded ? null : sub.id)}
-                  style={{ padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16 }}>
-                  {/* Avatar */}
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${t.colors.primary}, ${t.colors.purple})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14, color: '#fff', flexShrink: 0 }}>
+              <div
+                key={sub.id}
+                className={`${styles.submissionCard} ${isExpanded ? styles.submissionCardExpanded : ''}`}
+              >
+                <div className={styles.submissionHeader} onClick={() => setExpanded(isExpanded ? null : sub.id)}>
+                  <div className={styles.avatar}>
                     {sub.user?.firstName?.[0]}{sub.user?.lastName?.[0]}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, color: t.colors.text, fontSize: 15 }}>{sub.user?.lastName} {sub.user?.firstName}</div>
-                    <div style={{ fontSize: 13, color: t.colors.textSecondary, marginTop: 2 }}>
-                      <span style={{ color: t.colors.info }}>{sub.assignment?.lesson?.course?.title}</span>
-                      <span style={{ color: t.colors.textMuted }}> → {sub.assignment?.lesson?.title}</span>
-                      <span style={{ color: t.colors.textMuted }}> → </span>
-                      <span style={{ fontWeight: 600, color: t.colors.text }}>{sub.assignment?.title}</span>
+                  <div className={styles.submissionInfo}>
+                    <div className={styles.studentName}>{sub.user?.lastName} {sub.user?.firstName}</div>
+                    <div className={styles.submissionPath}>
+                      <span className={styles.pathCourse}>{sub.assignment?.lesson?.course?.title}</span>
+                      <span className={styles.pathSep}> → {sub.assignment?.lesson?.title} → </span>
+                      <span className={styles.pathAssignment}>{sub.assignment?.title}</span>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-                    <div style={{ fontSize: 12, color: t.colors.textMuted }}>{new Date(sub.submittedAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                  <div className={styles.submissionMeta}>
+                    <div className={styles.submissionDate}>
+                      {new Date(sub.submittedAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </div>
                     {sub.status === 'graded' ? (
-                      <span style={{ background: t.colors.successLight, color: t.colors.success, padding: '4px 10px', borderRadius: t.radius.full, fontSize: 12, fontWeight: 700 }}>✅ {sub.score}/{sub.assignment?.maxScore}</span>
+                      <span className={styles.badgeGraded}>✅ {sub.score}/{sub.assignment?.maxScore}</span>
                     ) : (
-                      <span style={{ background: t.colors.warningLight, color: t.colors.warning, padding: '4px 10px', borderRadius: t.radius.full, fontSize: 12, fontWeight: 700 }}>⏳ Ожидает</span>
+                      <span className={styles.badgePending}>⏳ Ожидает</span>
                     )}
-                    <span style={{ color: t.colors.textMuted, fontSize: 18, transition: 'transform 0.2s', transform: isExpanded ? 'rotate(90deg)' : 'none' }}>›</span>
+                    <span className={`${styles.chevron} ${isExpanded ? styles.chevronExpanded : ''}`}>›</span>
                   </div>
                 </div>
 
-                {/* Expanded */}
                 {isExpanded && (
-                  <div style={{ borderTop: `1px solid ${t.colors.border}`, padding: '20px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                      {/* Answer */}
+                  <div className={styles.expandedBody}>
+                    <div className={styles.expandedGrid}>
                       <div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: t.colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 10 }}>Ответ студента</div>
-                        <div style={{ background: t.colors.bgSecondary, borderRadius: t.radius.md, padding: 16, border: `1px solid ${t.colors.border}`, minHeight: 120 }}>
-                          <pre style={{ fontSize: 13, color: t.colors.text, fontFamily: 'JetBrains Mono, Consolas, monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0, lineHeight: 1.6 }}>{sub.answerText || '(пустой ответ)'}</pre>
+                        <div className={styles.sectionLabel}>Ответ студента</div>
+                        <div className={styles.answerBox}>
+                          <pre className={styles.answerPre}>{sub.answerText || '(пустой ответ)'}</pre>
                         </div>
-                        <div style={{ marginTop: 10, fontSize: 12, color: t.colors.textMuted }}>
+                        <div className={styles.answerMeta}>
                           Попытка #{sub.attemptNumber} • Сдано: {new Date(sub.submittedAt).toLocaleString('ru-RU')}
                         </div>
                       </div>
 
-                      {/* Grading */}
                       <div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: t.colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 10 }}>Оценка</div>
-                        <div style={{ background: t.colors.bgSecondary, borderRadius: t.radius.md, padding: 16, border: `1px solid ${t.colors.border}` }}>
-                          {/* Score input */}
-                          <div style={{ marginBottom: 14 }}>
-                            <label style={{ fontSize: 13, color: t.colors.textSecondary, display: 'block', marginBottom: 8 }}>Балл (макс. {sub.assignment?.maxScore})</label>
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                              <input type="number" min={0} max={sub.assignment?.maxScore} value={g.score}
+                        <div className={styles.sectionLabel}>Оценка</div>
+                        <div className={styles.gradeBox}>
+                          <div className={styles.scoreWrap}>
+                            <label className={styles.scoreLabel}>Балл (макс. {sub.assignment?.maxScore})</label>
+                            <div className={styles.scoreRow}>
+                              <input
+                                type="number"
+                                min={0}
+                                max={sub.assignment?.maxScore}
+                                value={g.score}
                                 onChange={e => setGrade(sub.id, 'score', e.target.value)}
                                 disabled={sub.status === 'graded'}
-                                style={{ width: 90, padding: '10px 12px', background: t.colors.bgCard, border: `1px solid ${t.colors.border}`, borderRadius: t.radius.md, color: t.colors.text, fontSize: 16, fontWeight: 700 }} />
+                                className={styles.scoreInput}
+                              />
                               {g.score && (
-                                <div style={{ flex: 1 }}>
-                                  <div style={{ background: t.colors.border, borderRadius: t.radius.full, height: 8, overflow: 'hidden' }}>
-                                    <div style={{ height: '100%', width: `${pct}%`, background: scoreColor(pct), borderRadius: t.radius.full, transition: 'width 0.3s' }} />
+                                <div className={`${styles.progressWrap} ${pctClass}`}>
+                                  <div className={styles.progressBar}>
+                                    <div className={styles.progressFill} style={{ width: `${pct}%` }} />
                                   </div>
-                                  <div style={{ fontSize: 12, color: scoreColor(pct), fontWeight: 700, marginTop: 4 }}>{pct}%</div>
+                                  <div className={styles.progressPct}>{pct}%</div>
                                 </div>
                               )}
                             </div>
-                            {/* Quick score buttons */}
                             {sub.status !== 'graded' && (
-                              <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
-                                {[100, 90, 80, 70, 60, 50].map(pct => (
-                                  <button key={pct} onClick={() => setGrade(sub.id, 'score', String(Math.round(sub.assignment?.maxScore * pct / 100)))}
-                                    style={{ padding: '4px 10px', background: t.colors.bgCard, border: `1px solid ${t.colors.border}`, borderRadius: t.radius.full, color: t.colors.textSecondary, fontSize: 12, cursor: 'pointer', transition: 'all 0.15s' }}
-                                    onMouseEnter={e => { e.currentTarget.style.borderColor = t.colors.primary; e.currentTarget.style.color = t.colors.primary; }}
-                                    onMouseLeave={e => { e.currentTarget.style.borderColor = t.colors.border; e.currentTarget.style.color = t.colors.textSecondary; }}>
-                                    {pct}%
+                              <div className={styles.quickScores}>
+                                {[100, 90, 80, 70, 60, 50].map(p => (
+                                  <button
+                                    key={p}
+                                    onClick={() => setGrade(sub.id, 'score', String(Math.round((sub.assignment?.maxScore ?? 0) * p / 100)))}
+                                    className={styles.quickScoreBtn}
+                                  >
+                                    {p}%
                                   </button>
                                 ))}
                               </div>
                             )}
                           </div>
 
-                          {/* Feedback */}
-                          <div style={{ marginBottom: 14 }}>
-                            <label style={{ fontSize: 13, color: t.colors.textSecondary, display: 'block', marginBottom: 8 }}>Комментарий преподавателя</label>
-                            <textarea value={g.feedback} onChange={e => setGrade(sub.id, 'feedback', e.target.value)}
-                              disabled={sub.status === 'graded'} rows={3} placeholder="Напишите обратную связь студенту..."
-                              style={{ width: '100%', padding: '10px 12px', background: t.colors.bgCard, border: `1px solid ${t.colors.border}`, borderRadius: t.radius.md, color: t.colors.text, fontSize: 13, resize: 'vertical', lineHeight: 1.5 }} />
+                          <div className={styles.feedbackWrap}>
+                            <label className={styles.feedbackLabel}>Комментарий преподавателя</label>
+                            <textarea
+                              value={g.feedback}
+                              onChange={e => setGrade(sub.id, 'feedback', e.target.value)}
+                              disabled={sub.status === 'graded'}
+                              rows={3}
+                              placeholder="Напишите обратную связь студенту..."
+                              className={styles.feedbackTextarea}
+                            />
                           </div>
 
-                          {/* Quick feedback templates */}
                           {sub.status !== 'graded' && (
-                            <div style={{ marginBottom: 14 }}>
-                              <div style={{ fontSize: 12, color: t.colors.textMuted, marginBottom: 6 }}>Шаблоны:</div>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <>
+                              <div className={styles.templatesLabel}>Шаблоны:</div>
+                              <div className={styles.templates}>
                                 {[
                                   'Отличная работа! Всё выполнено верно.',
                                   'Хорошо, но есть небольшие недочёты.',
                                   'Задание выполнено частично. Нужно доработать.',
                                   'Требуется переработка. Обратитесь за помощью.',
                                 ].map(tmpl => (
-                                  <button key={tmpl} onClick={() => setGrade(sub.id, 'feedback', tmpl)}
-                                    style={{ padding: '6px 10px', background: 'transparent', border: `1px solid ${t.colors.border}`, borderRadius: t.radius.sm, color: t.colors.textSecondary, fontSize: 12, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
-                                    onMouseEnter={e => { e.currentTarget.style.background = t.colors.primaryLight; e.currentTarget.style.color = t.colors.primary; e.currentTarget.style.borderColor = t.colors.primary; }}
-                                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = t.colors.textSecondary; e.currentTarget.style.borderColor = t.colors.border; }}>
+                                  <button
+                                    key={tmpl}
+                                    onClick={() => setGrade(sub.id, 'feedback', tmpl)}
+                                    className={styles.templateBtn}
+                                  >
                                     {tmpl}
                                   </button>
                                 ))}
                               </div>
-                            </div>
+                            </>
                           )}
 
                           {sub.status !== 'graded' ? (
-                            <button onClick={() => handleGrade(sub)} disabled={!g.score || saving[sub.id]}
-                              style={{ width: '100%', padding: '11px', background: g.score ? 'linear-gradient(135deg, #6c63ff, #a855f7)' : t.colors.textMuted, color: '#fff', border: 'none', borderRadius: t.radius.md, cursor: g.score ? 'pointer' : 'default', fontWeight: 700, fontSize: 14, boxShadow: g.score ? t.shadow.glow : 'none', transition: 'all 0.2s' }}>
+                            <button
+                              onClick={() => handleGrade(sub)}
+                              disabled={!g.score || saving[sub.id]}
+                              className={`${styles.gradeBtn} ${g.score && !saving[sub.id] ? styles.gradeBtnActive : styles.gradeBtnDisabled}`}
+                            >
                               {saving[sub.id] ? 'Сохранение...' : '✅ Выставить оценку'}
                             </button>
                           ) : (
-                            <div style={{ background: t.colors.successLight, border: `1px solid ${t.colors.success}40`, borderRadius: t.radius.md, padding: '12px', textAlign: 'center', color: t.colors.success, fontWeight: 700 }}>
+                            <div className={styles.gradedBadge}>
                               ✅ Оценка выставлена: {sub.score}/{sub.assignment?.maxScore}
                             </div>
                           )}

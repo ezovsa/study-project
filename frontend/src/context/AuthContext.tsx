@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
+import { User } from '../types';
 
-interface User { id: number; email: string; firstName: string; lastName: string; role: string; }
 interface AuthCtx { user: User | null; login: (email: string, password: string) => Promise<void>; logout: () => void; loading: boolean; }
 
 const AuthContext = createContext<AuthCtx>({} as AuthCtx);

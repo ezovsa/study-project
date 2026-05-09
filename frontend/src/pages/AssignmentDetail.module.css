@@ -1,0 +1,155 @@
+.backLink { color: var(--primary); font-size: 14px; font-weight: 600; margin-bottom: 20px; display: block; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+.infoCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.typeBadge {
+  font-size: 12px;
+  color: var(--purple);
+  background: var(--purple-light);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+.assignmentTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+}
+
+.descBox {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  border: 1px solid var(--border);
+  line-height: 1.8;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.submitCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.submitTitle { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+
+.textarea {
+  width: 100%;
+  padding: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  resize: vertical;
+  line-height: 1.7;
+  transition: all 0.2s;
+}
+
+.submitRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.charCount { font-size: 13px; color: var(--text-muted); }
+
+.submitBtn {
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #6c63ff, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: var(--shadow-glow);
+  transition: opacity 0.2s;
+}
+
+.submitBtn:disabled {
+  background: var(--text-muted);
+  box-shadow: none;
+  cursor: default;
+}
+
+.resultCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  border: 1px solid color-mix(in srgb, var(--success) 40%, transparent);
+}
+
+.resultInner { text-align: center; padding: 20px 0; }
+.resultIcon { font-size: 48px; margin-bottom: 16px; }
+.resultTitle { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.resultText { color: var(--text-secondary); margin-bottom: 20px; }
+
+.pendingBadge {
+  display: inline-flex;
+  gap: 8px;
+  background: var(--warning-light);
+  border: 1px solid color-mix(in srgb, var(--warning) 40%, transparent);
+  border-radius: var(--radius-full);
+  padding: 8px 20px;
+  color: var(--warning);
+  font-weight: 700;
+}
+
+/* Sidebar */
+.sidebar { position: sticky; top: 88px; }
+
+.sidebarCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+
+.sidebarTitle { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.infoList { display: flex; flex-direction: column; gap: 0; }
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.infoLabel { color: var(--text-secondary); }
+.infoValue { color: var(--text); font-weight: 700; }
+
+.deadline {
+  margin-top: 16px;
+  background: var(--danger-light);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--danger);
+  font-weight: 600;
+}

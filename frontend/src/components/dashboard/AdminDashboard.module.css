@@ -1,0 +1,28 @@
+.statsRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.navLink {
+  padding: 12px 24px;
+  background: color-mix(in srgb, var(--link-color) 20%, transparent);
+  color: var(--link-color);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 14px;
+  border: 1px solid color-mix(in srgb, var(--link-color) 30%, transparent);
+  transition: all 0.2s;
+}
+
+.navLink:hover {
+  background: var(--link-color);
+  color: #fff;
+}

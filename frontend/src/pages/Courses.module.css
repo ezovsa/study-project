@@ -1,0 +1,122 @@
+.header { margin-bottom: 28px; }
+.pageTitle { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 6px; }
+.pageSubtitle { color: var(--text-secondary); font-size: 14px; }
+
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.searchWrap {
+  flex: 1;
+  min-width: 220px;
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 11px 14px 11px 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.select {
+  padding: 11px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 14px;
+  min-width: 160px;
+}
+
+.count { margin-bottom: 20px; color: var(--text-secondary); font-size: 14px; }
+.countNum { color: var(--text); font-weight: 700; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.statsBar { margin-bottom: 20px; color: var(--text-secondary); font-size: 14px; }
+.statsBar strong { color: var(--text); }
+
+.courseCard {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.courseCard:hover {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow);
+}
+
+.cardTop { display: flex; justify-content: space-between; margin-bottom: 14px; }
+
+.categoryBadge {
+  font-size: 11px;
+  color: var(--info);
+  background: var(--info-light);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.diffBadge {
+  font-size: 11px;
+  color: var(--diff-color);
+  background: color-mix(in srgb, var(--diff-color) 20%, transparent);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.courseTitle { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.4; }
+
+.courseDesc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex: 1;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.cardFooter {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.empty { text-align: center; padding: 60px; color: var(--text-secondary); }
+.emptyTitle { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }

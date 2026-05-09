@@ -1,25 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, Legend } from 'recharts';
 import api from '../api/axios';
 import { theme as t } from '../styles/theme';
+import StatCard from '../components/dashboard/StatCard';
+import styles from './StudentAnalytics.module.css';
 
 const COLORS = [t.colors.primary, t.colors.success, t.colors.warning, t.colors.danger, t.colors.purple];
-
-const StatCard = ({ title, value, sub, color, icon }: any) => (
-  <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 20, flex: 1, minWidth: 140, border: `1px solid ${t.colors.border}`, position: 'relative', overflow: 'hidden' }}>
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: color }} />
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-      <div>
-        <div style={{ fontSize: 11, color: t.colors.textSecondary, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>{title}</div>
-        <div style={{ fontSize: 28, fontWeight: 800, color: t.colors.text, letterSpacing: '-1px' }}>{value}</div>
-        {sub && <div style={{ fontSize: 12, color: t.colors.textMuted, marginTop: 4 }}>{sub}</div>}
-      </div>
-      <div style={{ fontSize: 22, opacity: 0.8 }}>{icon}</div>
-    </div>
-  </div>
-);
-
 const chartTooltipStyle = { background: t.colors.bgCard, border: `1px solid ${t.colors.border}`, borderRadius: 8, color: t.colors.text, fontSize: 13 };
 
 export default function StudentAnalytics() {
@@ -53,12 +40,12 @@ export default function StudentAnalytics() {
 
   return (
     <div className="fade-in">
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: t.colors.text, letterSpacing: '-0.5px', marginBottom: 6 }}>Моя аналитика</h1>
-        <p style={{ color: t.colors.textSecondary, fontSize: 14 }}>Отслеживайте прогресс и выявляйте зоны роста</p>
+      <div className={styles.header}>
+        <h1 className={styles.pageTitle}>Моя аналитика</h1>
+        <p className={styles.pageSubtitle}>Отслеживайте прогресс и выявляйте зоны роста</p>
       </div>
 
-      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 28 }}>
+      <div className={styles.statsRow}>
         <StatCard title="Курсов" value={overview.totalCourses} icon="📚" color={t.colors.primary} />
         <StatCard title="Завершено" value={overview.completedCourses} icon="🏆" color={t.colors.success} />
         <StatCard title="Уроков" value={overview.completedLessons} icon="✅" color={t.colors.info} />
@@ -67,9 +54,9 @@ export default function StudentAnalytics() {
         <StatCard title="Заданий" value={overview.totalSubmissions} icon="📝" color={t.colors.danger} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 20, marginBottom: 20 }}>
-        <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 24, border: `1px solid ${t.colors.border}` }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: t.colors.text, marginBottom: 20 }}>Активность за последние 3 недели</h3>
+      <div className={styles.chartsGrid}>
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartTitle}>Активность за последние 3 недели</h3>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={activityData}>
               <defs>
@@ -87,8 +74,8 @@ export default function StudentAnalytics() {
           </ResponsiveContainer>
         </div>
 
-        <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 24, border: `1px solid ${t.colors.border}` }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: t.colors.text, marginBottom: 20 }}>Статус курсов</h3>
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartTitle}>Статус курсов</h3>
           {pieData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
@@ -99,12 +86,12 @@ export default function StudentAnalytics() {
                 <Tooltip contentStyle={chartTooltipStyle} />
               </PieChart>
             </ResponsiveContainer>
-          ) : <div style={{ color: t.colors.textMuted, textAlign: 'center', paddingTop: 60 }}>Нет данных</div>}
+          ) : <div className={styles.noData}>Нет данных</div>}
         </div>
       </div>
 
-      <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 24, border: `1px solid ${t.colors.border}`, marginBottom: 20 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: t.colors.text, marginBottom: 20 }}>Прогресс по курсам</h3>
+      <div className={styles.progressCard}>
+        <h3 className={styles.chartTitle}>Прогресс по курсам</h3>
         <ResponsiveContainer width="100%" height={Math.max(180, courses.length * 44)}>
           <BarChart data={coursesChart} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke={t.colors.border} horizontal={false} />
@@ -117,21 +104,19 @@ export default function StudentAnalytics() {
       </div>
 
       {weakSpots.length > 0 && (
-        <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 24, border: `1px solid ${t.colors.danger}30` }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: t.colors.danger, marginBottom: 16 }}>⚠️ Зоны роста</h3>
-          <p style={{ color: t.colors.textSecondary, fontSize: 14, marginBottom: 16 }}>Задания, в которых результат ниже 60% — уделите им больше внимания</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className={styles.weakCard}>
+          <h3 className={styles.weakTitle}>⚠️ Зоны роста</h3>
+          <p className={styles.weakDesc}>Задания, в которых результат ниже 60% — уделите им больше внимания</p>
+          <div className={styles.weakList}>
             {weakSpots.map((w, i) => (
-              <div key={i} style={{ background: t.colors.bgSecondary, borderRadius: t.radius.md, padding: '14px 16px', border: `1px solid ${t.colors.border}`, display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, color: t.colors.text, fontSize: 14 }}>{w.assignmentTitle}</div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 120, background: t.colors.border, borderRadius: t.radius.full, height: 6 }}>
-                    <div style={{ height: '100%', width: `${w.percent}%`, background: t.colors.danger, borderRadius: t.radius.full }} />
+              <div key={i} className={styles.weakItem}>
+                <div className={styles.weakName}>{w.assignmentTitle}</div>
+                <div className={styles.weakRight}>
+                  <div className={styles.weakBar}>
+                    <div className={styles.weakFill} style={{ width: `${w.percent}%` }} />
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: t.colors.danger, minWidth: 60, textAlign: 'right' }}>{w.score}/{w.maxScore}</span>
-                  <span style={{ background: t.colors.dangerLight, color: t.colors.danger, padding: '3px 10px', borderRadius: t.radius.full, fontSize: 12, fontWeight: 700 }}>{w.percent}%</span>
+                  <span className={styles.weakScore}>{w.score}/{w.maxScore}</span>
+                  <span className={styles.weakBadge}>{w.percent}%</span>
                 </div>
               </div>
             ))}

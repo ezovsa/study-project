@@ -1,22 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
+import { useEffect, useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import api from '../api/axios';
 import { theme as t } from '../styles/theme';
+import StatCard from '../components/dashboard/StatCard';
+import styles from './AdminDashboard.module.css';
 
 const chartTooltipStyle = { background: t.colors.bgCard, border: `1px solid ${t.colors.border}`, borderRadius: 8, color: t.colors.text, fontSize: 13 };
-
-const StatCard = ({ title, value, icon, color, trend }: any) => (
-  <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 24, flex: 1, minWidth: 160, border: `1px solid ${t.colors.border}`, position: 'relative', overflow: 'hidden' }}>
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: color }} />
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-      <div>
-        <div style={{ fontSize: 11, color: t.colors.textSecondary, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>{title}</div>
-        <div style={{ fontSize: 32, fontWeight: 800, color: t.colors.text, letterSpacing: '-1px' }}>{value}</div>
-      </div>
-      <div style={{ width: 44, height: 44, borderRadius: t.radius.md, background: color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{icon}</div>
-    </div>
-  </div>
-);
 
 export default function AdminDashboard() {
   const [overview, setOverview] = useState<any>(null);
@@ -42,12 +31,12 @@ export default function AdminDashboard() {
 
   return (
     <div className="fade-in">
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: t.colors.text, letterSpacing: '-0.5px', marginBottom: 6 }}>Аналитика платформы</h1>
-        <p style={{ color: t.colors.textSecondary, fontSize: 14 }}>Сводная статистика по всей образовательной платформе</p>
+      <div className={styles.header}>
+        <h1 className={styles.pageTitle}>Аналитика платформы</h1>
+        <p className={styles.pageSubtitle}>Сводная статистика по всей образовательной платформе</p>
       </div>
 
-      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 28 }}>
+      <div className={styles.statsRow}>
         <StatCard title="Пользователей" value={overview.totalUsers} icon="👥" color={t.colors.primary} />
         <StatCard title="Студентов" value={overview.totalStudents} icon="👨‍🎓" color={t.colors.info} />
         <StatCard title="Преподавателей" value={overview.totalTeachers} icon="👨‍🏫" color={t.colors.success} />
@@ -55,9 +44,9 @@ export default function AdminDashboard() {
         <StatCard title="Записей" value={overview.totalEnrollments} icon="📝" color={t.colors.purple} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
-        <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 24, border: `1px solid ${t.colors.border}` }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: t.colors.text, marginBottom: 20 }}>Топ курсов по записям</h3>
+      <div className={styles.chartsGrid}>
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartTitle}>Топ курсов по записям</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={topChart} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke={t.colors.border} horizontal={false} />
@@ -69,8 +58,8 @@ export default function AdminDashboard() {
           </ResponsiveContainer>
         </div>
 
-        <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 24, border: `1px solid ${t.colors.border}` }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: t.colors.text, marginBottom: 20 }}>Динамика записей и завершений</h3>
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartTitle}>Динамика записей и завершений</h3>
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={rateChart}>
               <defs>
@@ -94,31 +83,34 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Top courses table */}
-      <div style={{ background: t.colors.bgCard, borderRadius: t.radius.lg, padding: 24, border: `1px solid ${t.colors.border}` }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: t.colors.text, marginBottom: 20 }}>Рейтинг курсов</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className={styles.tableCard}>
+        <h3 className={styles.tableTitle}>Рейтинг курсов</h3>
+        <table className={styles.table}>
           <thead>
             <tr>
               {['#', 'Курс', 'Преподаватель', 'Категория', 'Записей'].map(h => (
-                <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: 12, color: t.colors.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: `1px solid ${t.colors.border}` }}>{h}</th>
+                <th key={h} className={styles.th}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {topCourses.map((tc, i) => (
-              <tr key={i} style={{ borderBottom: `1px solid ${t.colors.border}` }}
-                onMouseEnter={e => (e.currentTarget.style.background = t.colors.bgSecondary)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                <td style={{ padding: '12px 14px' }}>
-                  <span style={{ width: 28, height: 28, borderRadius: '50%', background: i < 3 ? `linear-gradient(135deg, ${t.colors.warning}, ${t.colors.danger})` : t.colors.bgSecondary, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: i < 3 ? '#fff' : t.colors.textMuted }}>{i + 1}</span>
+              <tr key={i} className={styles.tr}>
+                <td className={styles.td}>
+                  <span className={`${styles.rankBadge} ${i < 3 ? styles.rankTop : styles.rankOther}`}>{i + 1}</span>
                 </td>
-                <td style={{ padding: '12px 14px', fontWeight: 600, color: t.colors.text, fontSize: 14 }}>{tc.course?.title}</td>
-                <td style={{ padding: '12px 14px', color: t.colors.textSecondary, fontSize: 13 }}>{tc.course?.teacher?.firstName} {tc.course?.teacher?.lastName}</td>
-                <td style={{ padding: '12px 14px' }}>
-                  <span style={{ fontSize: 12, color: t.colors.info, background: t.colors.infoLight, padding: '3px 8px', borderRadius: t.radius.full, fontWeight: 600 }}>{tc.course?.category?.name || '—'}</span>
+                <td className={styles.td}>
+                  <div className={styles.courseTitle}>{tc.course?.title}</div>
                 </td>
-                <td style={{ padding: '12px 14px', fontWeight: 800, color: t.colors.success, fontSize: 16 }}>{tc.enrollmentsCount}</td>
+                <td className={styles.td}>
+                  <div className={styles.teacherName}>{tc.course?.teacher?.firstName} {tc.course?.teacher?.lastName}</div>
+                </td>
+                <td className={styles.td}>
+                  <span className={styles.categoryBadge}>{tc.course?.category?.name || '—'}</span>
+                </td>
+                <td className={styles.td}>
+                  <span className={styles.enrollCount}>{tc.enrollmentsCount}</span>
+                </td>
               </tr>
             ))}
           </tbody>
